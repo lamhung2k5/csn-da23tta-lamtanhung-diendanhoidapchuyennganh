@@ -1,0 +1,221 @@
+/*
+ * FILE 4: NGHIỆP VỤ VINH DANH
+ */
+
+// 1. Chọn Database để làm việc
+use('QnA_System_DB');
+
+// =========================================================
+// Top 5 thành viên uy tín nhất
+// =========================================================
+db.users.aggregate([
+  { $match: { status: "active" } },
+  { $sort: { reputation: -1, joined_at: 1 } }, // Ưu tiên điểm cao, sau đó đến ngày gia nhập
+  { $limit: 5 },
+  { 
+    $project: { 
+      _id: 0, 
+      username: 1, 
+      reputation: 1, 
+      medal_counts: 1 
+    } 
+  }
+]);
+
+// =========================================================
+// Vinh danh thành viên giải quyết vấn đề xuất sắc nhất
+// =========================================================
+db.users.aggregate([
+  { $match: { status: "active" } },
+  {
+    $group: {
+      _id: "$stats.accepted_answer_count",
+      candidates:{ $push: {username:"$username", count: "$stats.accepted_answer_count"}}
+  }
+  },
+  { $sort: { _id: -1 } }, // Sắp xếp theo số lượng giảm dần
+  { $limit: 1 },          // Lấy nhóm cao nhất
+  { $unwind: "$candidates" },
+  { 
+    $project: { 
+      _id: 0, 
+      username: "$candidates.username", 
+      accepted_count: "$candidates.count" 
+    } 
+  }
+]);
+
+// =========================================================
+// Vinh danh thành viên hoạt động chăm chỉ nhất (Nhiều câu trả lời)
+// =========================================================
+db.users.aggregate([
+  { $match: { status: "active" } },
+  {
+    $group: {
+      _id: "$stats.answer_count",
+      candidates: { $push: { username: "$username", count: "$stats.answer_count" } }
+    }
+  },
+  { $sort: { _id: -1 } }, { $limit: 1 }, { $unwind: "$candidates" },
+  { 
+    $project: { 
+      _id: 0, 
+      username: "$candidates.username", 
+      answer_count: "$candidates.count" 
+    } 
+  }
+]);
+
+// =========================================================
+// Vinh danh thành viên đặt vấn đề nhiều nhất (Nhiều câu hỏi)
+// =========================================================
+db.users.aggregate([
+  { $match: { status: "active" } },
+  {
+    $group: {
+      _id: "$stats.question_count",
+      candidates: { $push: { username: "$username", count: "$stats.question_count" } }
+    }
+  },
+  { $sort: { _id: -1 } },
+  { $limit: 1 },
+  { $unwind: "$candidates" },
+  { 
+    $project: { 
+      _id: 0, 
+      username: "$candidates.username", 
+      question_count: "$candidates.count" 
+    } 
+  }
+]);
+
+// =========================================================
+// Vinh danh theo huy chương
+// =========================================================
+db.users.aggregate([
+  { $match: { status: "active" } },
+  {
+    $group: {
+      _id: "$medal_counts.gold",
+      candidates: { $push: { username: "$username", gold_medals: "$medal_counts.gold" } }
+    }
+  },
+  { $sort: { _id: -1 } },
+  { $limit: 1 },
+  { $unwind: "$candidates" },
+  { 
+    $project: { 
+      _id: 0, 
+      username: "$candidates.username", 
+      gold_medals: "$candidates.gold_medals" 
+    } 
+  }
+]);
+
+// =========================================================
+// Câu hỏi được thảo luận sôi nổi nhất
+// =========================================================
+db.questions.aggregate([
+  { $match: { status: "open" } },
+  {
+    $group: {
+      _id: "$answer_count",
+      questions: { $push: { title: "$title", author: "$author_info.username", answers: "$answer_count" } }
+    }
+  },
+  { $sort: { _id: -1 } },
+  { $limit: 1 },
+  { $unwind: "$questions" },
+  { 
+    $project: { 
+      _id: 0, 
+      title: "$questions.title", 
+      author: "$questions.author", 
+      answers: "$questions.answers"
+    }
+  }
+]);
+
+// =========================================================
+// Câu trả lời chất lượng nhất
+// =========================================================
+db.answers.aggregate([
+  {
+    $group: {
+      _id: "$vote_score",
+      answers: { $push: { author: "$author_info.username", vote_score: "$vote_score", body: "$body" } }
+    }
+  },
+  { $sort: { _id: -1 } }, { $limit: 1 },
+  { $unwind: "$answers" },
+  { 
+    $project: { 
+      _id: 0, 
+      author: "$answers.author", 
+      vote_score: "$answers.vote_score",
+      body: "$answers.body" // Hiển thị body để kiểm chứng
+    }
+  }
+]);
+
+
+// =========================================================
+// Chuyên gia lĩnh vực MongoDB
+// =========================================================
+db.questions.aggregate([
+  { $match: { tags: "mongodb" } },
+  {
+    $group: {
+      _id: "$author_info.username",
+      total_votes: { $sum: "$vote_score" }
+    }
+  },
+  {
+    $group: {
+      _id: "$total_votes",
+      users: { $push: { username: "$_id", total_votes: "$total_votes" } }
+    }
+  },
+  { $sort: { _id: -1 } }, 
+  { $limit: 1 }, 
+  { $unwind: "$users" },
+  { 
+    $project: { 
+      _id: 0, 
+      username: "$users.username", 
+      total_votes: "$users.total_votes" 
+    } 
+  }
+]);
+
+
+// =========================================================
+// Phân loại danh hiệu người dùng
+// =========================================================
+db.users.aggregate([
+  { $match: { status: "active" } },
+  { $sort: { reputation: -1 } },
+  {
+    $project: {
+      _id: 0,
+      username: 1,
+      reputation: 1,
+      danh_hieu: {
+        $switch: {
+          branches: [
+            { case: { $gte: ["$reputation", 300] }, then: "Bậc thầy" },
+            { case: { $gte: ["$reputation", 100] },  then: "Người hướng dẫn" },
+            { case: { $gte: ["$reputation", 50] },  then: "Học việc" }
+          ],
+          default: "Thành viên mới"
+        }
+      }
+    }
+  }
+]);
+
+
+
+
+
+

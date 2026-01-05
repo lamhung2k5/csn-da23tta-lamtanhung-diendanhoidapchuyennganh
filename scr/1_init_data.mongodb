@@ -1,0 +1,751 @@
+// Sử dụng Database (Nếu chưa có sẽ tự tạo)
+use('QnA_System_DB');
+
+// Xóa dữ liệu cũ để tránh trùng lặp khi chạy lại nhiều lần
+db.users.drop();
+db.questions.drop();
+db.answers.drop();
+
+// ---------------------------------------------------------
+// 1. NẠP DỮ LIỆU JSON CHO COLLECTION: USERS
+// ---------------------------------------------------------
+db.users.insertMany([
+  {
+    _id: '675000000000000000000001',
+    username: 'admin_root',
+    password: 'Admin@123',
+    role: 'admin',
+    email: 'admin@example.com',
+    joined_at: '2024-01-10T09:00:00Z',
+    status: 'active',
+    reputation: 0,
+    stats: { question_count: 0, answer_count: 0, accepted_answer_count: 0 },
+    medal_counts: { gold: 0, platinum: 0, diamond: 0 }
+  },
+  {
+    _id: '675000000000000000000002',
+    username: 'Nguyễn Văn An',
+    password: 'User@12345',
+    role: 'member',
+    email: 'nguyenvana@example.com',
+    joined_at: '2024-02-15T14:20:00Z',
+    status: 'active',
+    reputation: 115,
+    stats: { question_count: 5, answer_count: 6, accepted_answer_count: 3 },
+    medal_counts: { gold: 3, platinum: 1, diamond: 0 }
+  },
+  {
+    _id: '675000000000000000000003',
+    username: 'Trần Thị Bình',
+    password: 'User@23456',
+    role: 'member',
+    email: 'tranthib@example.com',
+    joined_at: '2024-03-02T08:45:00Z',
+    status: 'active',
+    reputation: 115,
+    stats: { question_count: 5, answer_count: 6, accepted_answer_count: 3 },
+    medal_counts: { gold: 3, platinum: 2, diamond: 1 }
+  },
+  {
+    _id: '675000000000000000000004',
+    username: 'Lê Quang Cường',
+    password: 'User@34567',
+    role: 'member',
+    email: 'lequangc@example.com',
+    joined_at: '2024-03-20T19:10:00Z',
+    status: 'active',
+    reputation: 82,
+    stats: { question_count: 2, answer_count: 4, accepted_answer_count: 2 },
+    medal_counts: { gold: 2, platinum: 1, diamond: 0 }
+  },
+  {
+    _id: '675000000000000000000005',
+    username: 'Phạm Minh Đức',
+    password: 'User@45678',
+    role: 'member',
+    email: 'phamminhd@example.com',
+    joined_at: '2024-04-05T11:30:00Z',
+    status: 'active',
+    reputation: 59,
+    stats: { question_count: 2, answer_count: 3, accepted_answer_count: 1 },
+    medal_counts: { gold: 1, platinum: 0, diamond: 0 }
+  },
+  {
+    _id: '675000000000000000000006',
+    username: 'Hoàng Nam Anh',
+    password: 'User@56789',
+    role: 'member',
+    email: 'hoangname@example.com',
+    joined_at: '2024-05-12T16:05:00Z',
+    status: 'active',
+    reputation: 62,
+    stats: { question_count: 2, answer_count: 4, accepted_answer_count: 1 },
+    medal_counts: { gold: 1, platinum: 1, diamond: 0 }
+  },
+  {
+    _id: '675000000000000000000007',
+    username: 'Vũ Hoài Phúc',
+    password: 'User@67890',
+    role: 'member',
+    email: 'vuhoaif@example.com',
+    joined_at: '2024-06-01T09:15:00Z',
+    status: 'active',
+    reputation: 29,
+    stats: { question_count: 0, answer_count: 3, accepted_answer_count: 0 },
+    medal_counts: { gold: 1, platinum: 0, diamond: 0 }
+  },
+  {
+    _id: '675000000000000000000008',
+    username: 'Linh Chi',
+    password: 'User@78901',
+    role: 'member',
+    email: 'linhchig@example.com',
+    joined_at: '2024-06-18T22:40:00Z',
+    status: 'active',
+    reputation: 8,
+    stats: { question_count: 0, answer_count: 1, accepted_answer_count: 0 },
+    medal_counts: { gold: 0, platinum: 0, diamond: 0 }
+  },
+  {
+    _id: '675000000000000000000009',
+    username: 'Tuấn Anh',
+    password: 'User@89012',
+    role: 'member',
+    email: 'tuananhh@example.com',
+    joined_at: '2024-07-07T13:55:00Z',
+    status: 'banned',
+    reputation: 500,
+    stats: { question_count: 1, answer_count: 1, accepted_answer_count: 0 },
+    medal_counts: { gold: 0, platinum: 0, diamond: 0 }
+  },
+  {
+    _id: '67500000000000000000000a',
+    username: 'Khoái',
+    password: 'User@90123',
+    role: 'member',
+    email: 'khoai@example.com',
+    joined_at: '2024-07-21T07:25:00Z',
+    status: 'banned',
+    reputation: 115,
+    stats: { question_count: 0, answer_count: 1, accepted_answer_count: 0 },
+    medal_counts: { gold: 0, platinum: 0, diamond: 0 }
+  }
+])
+
+// ---------------------------------------------------------
+// 2. NẠP DỮ LIỆU JSON CHO COLLECTION: QUESTIONS
+// ---------------------------------------------------------
+db.questions.insertMany([
+  {
+    _id: '675100000000000000000001',
+    title: 'Thiết kế schema MongoDB cho hệ thống hỏi đáp giống StackOverflow?',
+    body: 'Em đang làm đồ án hệ thống hỏi đáp chuyên ngành, cần thiết kế schema MongoDB cho users, questions, answers. Nên nhúng (embed) hay tham chiếu (reference) để tối ưu cho việc truy vấn danh sách câu hỏi và câu trả lời?',
+    tags: [ 'mongodb', 'schema-design', 'database' ],
+    created_at: '2024-08-01T09:15:00Z',
+    status: 'open',
+    author_info: { author_id: '675000000000000000000002', username: 'Nguyễn Văn An' },
+    vote_score: 2,
+    answer_count: 3,
+    voters: [
+      { voter_id: '675000000000000000000003', value: 1 },
+      { voter_id: '675000000000000000000004', value: 1 },
+      { voter_id: '675000000000000000000005', value: 1 },
+      { voter_id: '675000000000000000000006', value: -1 }
+    ]
+  },
+  {
+    _id: '675100000000000000000002',
+    title: 'Khi nào nên dùng MongoDB thay vì MySQL cho web dịch vụ?',
+    body: 'Dự án web dịch vụ có nhiều lượt đọc, ít ghi, dữ liệu không quá phức tạp về quan hệ. Trong trường hợp nào nên chọn MongoDB thay vì MySQL, và có các trade-off gì về transaction, join, consistency?',
+    tags: [ 'mongodb', 'mysql', 'architecture' ],
+    created_at: '2024-08-03T14:20:00Z',
+    status: 'open',
+    author_info: { author_id: '675000000000000000000003', username: 'Trần Thị Bình' },
+    vote_score: 1,
+    answer_count: 2,
+    voters: [
+      { voter_id: '675000000000000000000002', value: 1 },
+      { voter_id: '675000000000000000000004', value: 1 },
+      { voter_id: '675000000000000000000005', value: -1 }
+    ]
+  },
+  {
+    _id: '675100000000000000000003',
+    title: 'So sánh ưu nhược điểm giữa mô hình quan hệ và NoSQL trong đồ án Cơ sở ngành?',
+    body: 'Thầy yêu cầu phân tích lý do vì sao chọn MongoDB cho đồ án Cơ sở ngành thay vì dùng hoàn toàn MySQL. Cần liệt kê ưu nhược điểm chính của từng mô hình và ví dụ tình huống áp dụng.',
+    tags: [ 'database', 'nosql', 'relational-db' ],
+    created_at: '2024-08-05T08:45:00Z',
+    status: 'hidden',
+    author_info: { author_id: '675000000000000000000004', username: 'Lê Quang Cường' },
+    vote_score: 0,
+    answer_count: 0,
+    voters: [
+      { voter_id: '675000000000000000000002', value: 1 },
+      { voter_id: '675000000000000000000003', value: -1 }
+    ]
+  },
+  {
+    _id: '675100000000000000000004',
+    title: 'Thiết kế index cho collection questions để tối ưu tìm kiếm theo tag?',
+    body: 'Em có collection questions với trường tags là mảng string. Khi search theo một hoặc nhiều tag thì nên tạo index như thế nào cho hiệu quả? Có nên dùng compound index với created_at không?',
+    tags: [ 'mongodb', 'indexing', 'performance' ],
+    created_at: '2024-08-10T19:10:00Z',
+    status: 'open',
+    author_info: { author_id: '675000000000000000000002', username: 'Nguyễn Văn An' },
+    vote_score: 3,
+    answer_count: 4,
+    voters: [
+      { voter_id: '675000000000000000000003', value: 1 },
+      { voter_id: '675000000000000000000004', value: 1 },
+      { voter_id: '675000000000000000000006', value: 1 }
+    ]
+  },
+  {
+    _id: '675100000000000000000005',
+    title: 'Lưu lịch sử chỉnh sửa câu hỏi trong MongoDB như thế nào?',
+    body: 'Hệ thống hỏi đáp cần lưu lại lịch sử chỉnh sửa câu hỏi (title, body). Nên lưu toàn bộ bản ghi cũ vào một collection riêng hay dùng mảng embedded trong document chính?',
+    tags: [ 'mongodb', 'audit-log', 'design' ],
+    created_at: '2024-08-15T11:30:00Z',
+    status: 'open',
+    author_info: { author_id: '675000000000000000000005', username: 'Phạm Minh Đức' },
+    vote_score: 2,
+    answer_count: 1,
+    voters: [
+      { voter_id: '675000000000000000000002', value: 1 },
+      { voter_id: '675000000000000000000003', value: 1 }
+    ]
+  },
+  {
+    _id: '675100000000000000000006',
+    title: 'Cách phân trang (pagination) hiệu quả với MongoDB cho danh sách câu hỏi?',
+    body: 'Khi hiển thị danh sách câu hỏi mới nhất, em dùng skip/limit thì bị chậm khi dữ liệu lớn. Có giải pháp nào tốt hơn cho pagination trong MongoDB, ví dụ dùng _id hoặc created_at làm cursor?',
+    tags: [ 'mongodb', 'pagination', 'performance' ],
+    created_at: '2024-08-20T16:05:00Z',
+    status: 'open',
+    author_info: { author_id: '675000000000000000000006', username: 'Hoàng Nam Anh' },
+    vote_score: 4,
+    answer_count: 2,
+    voters: [
+      { voter_id: '000000000000000000000000', value: 3 },
+      { voter_id: '675000000000000000000003', value: 1 },
+    ]
+  },
+  {
+    _id: '675100000000000000000007',
+    title: 'Tính điểm reputation cho user dựa trên vote của câu hỏi và câu trả lời?',
+    body: 'Em muốn thiết kế rule tính điểm reputation giống StackOverflow: khi câu trả lời được upvote, accepted answer, hoặc câu hỏi bị downvote thì cộng/trừ bao nhiêu điểm là hợp lý cho đồ án?',
+    tags: [ 'reputation', 'gamification', 'system-design' ],
+    created_at: '2024-08-25T09:15:00Z',
+    status: 'open',
+    author_info: { author_id: '675000000000000000000002', username: 'Nguyễn Văn An' },
+    vote_score: 2,
+    answer_count: 3,
+    voters: [
+      { voter_id: '675000000000000000000003', value: 1 },
+      { voter_id: '675000000000000000000004', value: 1 },
+      { voter_id: '675000000000000000000005', value: 1 },
+      { voter_id: '675000000000000000000006', value: -1 }
+    ]
+  },
+  {
+    _id: '675100000000000000000008',
+    title: 'Có nên cho phép admin tham gia vote và trả lời trong hệ thống hỏi đáp?',
+    body: 'Trong đặc tả hệ thống hiện tại, admin chỉ có quyền quản trị, không được đặt câu hỏi, trả lời hoặc vote. Thiết kế như vậy có bất lợi gì không so với việc để admin cũng là một user bình thường?',
+    tags: [ 'role', 'authorization', 'design-decision' ],
+    created_at: '2024-09-01T22:40:00Z',
+    status: 'hidden',
+    author_info: { author_id: '675000000000000000000003', username: 'Trần Thị Bình' },
+    vote_score: 0,
+    answer_count: 0,
+    voters: [
+      { voter_id: '675000000000000000000002', value: 1 },
+      { voter_id: '675000000000000000000004', value: -1 }
+    ]
+  },
+  {
+    _id: '675100000000000000000009',
+    title: 'Thiết kế chức năng ẩn (hidden) câu hỏi do vi phạm nội quy?',
+    body: 'Em muốn khi câu hỏi bị report nhiều lần thì tự động chuyển status sang hidden nhưng không xóa hẳn để giữ log. Có nên tạo thêm collection reports hay chỉ cần lưu số lần report trong questions?',
+    tags: [ 'moderation', 'status', 'system-design' ],
+    created_at: '2024-09-05T13:55:00Z',
+    status: 'open',
+    author_info: { author_id: '675000000000000000000004', username: 'Lê Quang Cường' },
+    vote_score: 3,
+    answer_count: 1,
+    voters: [
+      { voter_id: '675000000000000000000002', value: 1 },
+      { voter_id: '675000000000000000000005', value: 1 },
+      { voter_id: '675000000000000000000007', value: 1 }
+    ]
+  },
+  {
+    _id: '67510000000000000000000a',
+    title: 'Cách tổ chức tag cho câu hỏi: dùng tiếng Việt hay tiếng Anh?',
+    body: 'Trong hệ thống hỏi đáp chuyên ngành CNTT, nên chuẩn hóa tag theo tiếng Việt hay tiếng Anh để thuận tiện cho người dùng tìm kiếm và mở rộng sau này?',
+    tags: [ 'tags', 'ux', 'best-practice' ],
+    created_at: '2024-09-10T07:25:00Z',
+    status: 'open',
+    author_info: { author_id: '675000000000000000000005', username: 'Phạm Minh Đức' },
+    vote_score: 2,
+    answer_count: 4,
+    voters: [
+      { voter_id: '675000000000000000000002', value: 1 },
+      { voter_id: '675000000000000000000003', value: 1 }
+    ]
+  },
+  {
+    _id: '67510000000000000000000b',
+    title: 'Làm sao để demo tính năng full-text search trong MongoDB cho đồ án?',
+    body: 'MongoDB có hỗ trợ full-text search cơ bản. Em muốn dựng demo tìm kiếm theo title và body câu hỏi, có highlight từ khóa thì cần cấu hình index và truy vấn như thế nào?',
+    tags: [ 'mongodb', 'full-text-search' ],
+    created_at: '2024-09-15T09:00:00Z',
+    status: 'open',
+    author_info: { author_id: '675000000000000000000006', username: 'Hoàng Nam Anh' },
+    vote_score: 2,
+    answer_count: 2,
+    voters: [
+      { voter_id: '675000000000000000000002', value: 1 },
+      { voter_id: '675000000000000000000003', value: 1 },
+      { voter_id: '675000000000000000000004', value: 1 },
+      { voter_id: '675000000000000000000008', value: -1 }
+    ]
+  },
+  {
+    _id: '67510000000000000000000c',
+    title: 'Có nên lưu thông tin voters của câu hỏi trong mảng hay tách collection riêng?',
+    body: 'Hiện em đang lưu danh sách người vote cho câu hỏi trong mảng voters (voter_id, value). Khi số lượng vote lớn thì việc cập nhật có bị chậm không, có cần tách riêng thành collection votes?',
+    tags: [ 'mongodb', 'schema-design', 'scalability' ],
+    created_at: '2024-09-20T10:30:00Z',
+    status: 'open',
+    author_info: { author_id: '675000000000000000000002', username: 'Nguyễn Văn An' },
+    vote_score: 2,
+    answer_count: 2,
+    voters: [
+      { voter_id: '675000000000000000000003', value: 1 },
+      { voter_id: '675000000000000000000004', value: 1 }
+    ]
+  },
+  {
+    _id: '67510000000000000000000d',
+    title: 'Thiết kế API lấy danh sách câu hỏi kèm số lượng câu trả lời?',
+    body: 'Trong REST API cho frontend, em muốn endpoint trả về danh sách câu hỏi kèm số lượng câu trả lời tương ứng. Nên dùng aggregation lookup trên collection answers hay lưu sẵn answer_count trong questions?',
+    tags: [ 'api-design', 'aggregation', 'mongodb' ],
+    created_at: '2024-09-25T15:45:00Z',
+    status: 'open',
+    author_info: { author_id: '675000000000000000000003', username: 'Trần Thị Bình' },
+    vote_score: 3,
+    answer_count: 1,
+    voters: [
+      { voter_id: '675000000000000000000002', value: 1 },
+      { voter_id: '675000000000000000000004', value: 1 },
+      { voter_id: '675000000000000000000005', value: 1 }
+    ]
+  },
+  {
+    _id: '67510000000000000000000e',
+    title: 'Xử lý user bị banned nhưng vẫn còn câu hỏi và câu trả lời cũ?',
+    body: 'Khi user bị banned, hệ thống nên xử lý các câu hỏi và câu trả lời cũ như thế nào? Có nên ẩn toàn bộ nội dung của họ hay chỉ đánh dấu trạng thái user là banned để giữ lịch sử?',
+    tags: [ 'moderation', 'user-status' ],
+    created_at: '2024-10-01T08:20:00Z',
+    status: 'open',
+    author_info: { author_id: '675000000000000000000009', username: 'Tuấn Anh' },
+    vote_score: 1,
+    answer_count: 2,
+    voters: [
+      { voter_id: '675000000000000000000002', value: 1 },
+      { voter_id: '675000000000000000000003', value: 1 },
+      { voter_id: '675000000000000000000004', value: -1 }
+    ]
+  },
+  {
+    _id: '67510000000000000000000f',
+    title: "Gợi ý cấu trúc demo dữ liệu 'vừa đủ' cho đồ án hệ thống hỏi đáp?",
+    body: 'Đồ án yêu cầu có dữ liệu demo nhưng không cần quá lớn. Khoảng bao nhiêu users, questions, answers là hợp lý để thể hiện được tính năng tìm kiếm, phân trang, vote và thống kê?',
+    tags: [ 'demo-data', 'system-design' ],
+    created_at: '2024-10-05T09:50:00Z',
+    status: 'open',
+    author_info: { author_id: '675000000000000000000002', username: 'Nguyễn Văn An' },
+    vote_score: 4,
+    answer_count: 1,
+    voters: [
+      { voter_id: '675000000000000000000003', value: 1 },
+      { voter_id: '675000000000000000000004', value: 1 },
+      { voter_id: '675000000000000000000005', value: 1 },
+      { voter_id: '675000000000000000000006', value: 1 }
+    ]
+  }
+])
+// ---------------------------------------------------------
+// 3. NẠP DỮ LIỆU JSON CHO COLLECTION: ANSWERS
+// ---------------------------------------------------------
+db.answers.insertMany([
+  {
+    _id: '675200000000000000000001',
+    question_id: '675100000000000000000001',
+    body: 'Bạn có thể thiết kế schema dạng lai...',
+    created_at: '2024-08-01T10:00:00Z',
+    author_info: { author_id: '675000000000000000000003', username: 'Trần Thị Bình' },
+    vote_score: 15, // Đã khớp: 12 + 1 + 1 + 1 = 15
+    is_accepted: true,
+    voters: [
+      { voter_id: '000000000000000000000000', value: 12 }, // Sửa vote ảo lên 12 cho khớp
+      { voter_id: '675000000000000000000002', value: 1 },
+      { voter_id: '675000000000000000000004', value: 1 },
+      { voter_id: '675000000000000000000005', value: 1 }
+    ]
+  },
+  {
+    _id: '675200000000000000000002',
+    question_id: '675100000000000000000001',
+    body: 'Nếu quy mô đồ án nhỏ...',
+    created_at: '2024-08-01T10:30:00Z',
+    author_info: { author_id: '675000000000000000000004', username: 'Lê Quang Cường' },
+    vote_score: 0,
+    is_accepted: false,
+    voters: [
+      { voter_id: '675000000000000000000002', value: 1 },
+      { voter_id: '675000000000000000000003', value: -1 }
+    ]
+  },
+  {
+    _id: '675200000000000000000003',
+    question_id: '675100000000000000000001',
+    body: 'Trong đồ án Cơ sở ngành...',
+    created_at: '2024-08-01T11:00:00Z',
+    author_info: { author_id: '675000000000000000000006', username: 'Hoàng Nam Anh' },
+    vote_score: 1,
+    is_accepted: false,
+    voters: [ { voter_id: '675000000000000000000005', value: 1 } ]
+  },
+  {
+    _id: '675200000000000000000004',
+    question_id: '675100000000000000000002',
+    body: 'MongoDB phù hợp khi dữ liệu mang tính document...',
+    created_at: '2024-08-03T15:00:00Z',
+    author_info: { author_id: '675000000000000000000004', username: 'Lê Quang Cường' },
+    vote_score: 135,
+    is_accepted: true,
+    voters: [
+      { voter_id: '675000000000000000000002', value: 134 },
+      { voter_id: '675000000000000000000003', value: 1 }
+    ]
+  },
+  {
+    _id: '675200000000000000000005',
+    question_id: '675100000000000000000002',
+    body: 'Nếu hệ thống của bạn cần báo cáo phức tạp...',
+    created_at: '2024-08-03T15:30:00Z',
+    author_info: { author_id: '675000000000000000000002', username: 'Nguyễn Văn An' },
+    vote_score: 0,
+    is_accepted: false,
+    voters: [
+      { voter_id: '675000000000000000000003', value: 1 },
+      { voter_id: '675000000000000000000004', value: -1 }
+    ]
+  },
+  {
+    _id: '675200000000000000000006',
+    question_id: '675100000000000000000004',
+    body: 'Với trường tags là mảng...',
+    created_at: '2024-08-11T08:00:00Z',
+    author_info: { author_id: '675000000000000000000002', username: 'Nguyễn Văn An' },
+    vote_score: 3,
+    is_accepted: true,
+    voters: [
+      { voter_id: '675000000000000000000003', value: 1 },
+      { voter_id: '675000000000000000000004', value: 1 },
+      { voter_id: '675000000000000000000006', value: 1 }
+    ]
+  },
+  {
+    _id: '675200000000000000000007',
+    question_id: '675100000000000000000004',
+    body: 'Nếu bạn thường lọc theo tag...',
+    created_at: '2024-08-11T08:30:00Z',
+    author_info: { author_id: '675000000000000000000003', username: 'Trần Thị Bình' },
+    vote_score: 1,
+    is_accepted: false,
+    voters: [
+      { voter_id: '675000000000000000000002', value: 1 },
+      { voter_id: '675000000000000000000005', value: 1 },
+      { voter_id: '675000000000000000000007', value: -1 }
+    ]
+  },
+  {
+    _id: '675200000000000000000008',
+    question_id: '675100000000000000000004',
+    body: 'Đừng quên phân tích profiler...',
+    created_at: '2024-08-11T09:00:00Z',
+    author_info: { author_id: '675000000000000000000005', username: 'Phạm Minh Đức' },
+    vote_score: 1,
+    is_accepted: false,
+    voters: [ { voter_id: '675000000000000000000002', value: 1 } ]
+  },
+  {
+    _id: '675200000000000000000009',
+    question_id: '675100000000000000000004',
+    body: 'Trong đồ án, bạn có thể minh họa...',
+    created_at: '2024-08-11T09:30:00Z',
+    author_info: { author_id: '675000000000000000000007', username: 'Vũ Hoài Phúc' },
+    vote_score: 0,
+    is_accepted: false,
+    voters: []
+  },
+  {
+    _id: '67520000000000000000000a',
+    question_id: '675100000000000000000005',
+    body: 'Cách đơn giản là giữ câu hỏi hiện tại...',
+    created_at: '2024-08-15T13:00:00Z',
+    author_info: { author_id: '675000000000000000000006', username: 'Hoàng Nam Anh' },
+    vote_score: 1,
+    is_accepted: false,
+    voters: [
+      { voter_id: '675000000000000000000002', value: 1 },
+      { voter_id: '675000000000000000000003', value: 1 },
+      { voter_id: '675000000000000000000006', value: -1 }
+    ]
+  },
+  {
+    _id: '67520000000000000000000b',
+    question_id: '675100000000000000000006',
+    body: 'Thay vì dùng skip/limit...',
+    created_at: '2024-08-20T17:00:00Z',
+    author_info: { author_id: '675000000000000000000003', username: 'Trần Thị Bình' },
+    vote_score: 135, 
+    is_accepted: true,
+    voters: [
+      { voter_id: '000000000000000000000000', value: 135 }
+    ]
+  },
+  {
+    _id: '67520000000000000000000c',
+    question_id: '675100000000000000000006',
+    body: 'Trong MongoDB, bạn có thể kết hợp sort...',
+    created_at: '2024-08-20T17:30:00Z',
+    author_info: { author_id: '675000000000000000000002', username: 'Nguyễn Văn An' },
+    vote_score: 3, 
+    is_accepted: false,
+    voters: [
+      { voter_id: '000000000000000000000000', value: 3 },
+      { voter_id: '675000000000000000000003', value: 1 },
+      { voter_id: '675000000000000000000005', value: -1 }
+    ]
+  },
+  {
+    _id: '67520000000000000000000d',
+    question_id: '675100000000000000000007',
+    body: 'Bạn có thể định nghĩa rule đơn giản...',
+    created_at: '2024-08-25T10:00:00Z',
+    author_info: { author_id: '675000000000000000000003', username: 'Trần Thị Bình' },
+    vote_score: 5, 
+    is_accepted: true,
+    voters: [
+      { voter_id: '000000000000000000000000', value: 3 },
+      { voter_id: '675000000000000000000005', value: 1 },
+      { voter_id: '675000000000000000000006', value: 1 }
+    ]
+  },
+  {
+    _id: '67520000000000000000000e',
+    question_id: '675100000000000000000007',
+    body: 'Đối với câu hỏi, bạn có thể cho upvote +5...',
+    created_at: '2024-08-25T10:30:00Z',
+    author_info: { author_id: '675000000000000000000004', username: 'Lê Quang Cường' },
+    vote_score: 2, 
+    is_accepted: false,
+    voters: [
+      { voter_id: '000000000000000000000000', value: 3 },
+      { voter_id: '675000000000000000000003', value: -1 },
+    ]
+  },
+  {
+    _id: '67520000000000000000000f',
+    question_id: '675100000000000000000007',
+    body: 'Quan trọng là bạn mô tả rõ rule...',
+    created_at: '2024-08-25T11:00:00Z',
+    author_info: { author_id: '675000000000000000000006', username: 'Hoàng Nam Anh' },
+    vote_score: 4, 
+    is_accepted: false,
+    voters: [
+      { voter_id: '675000000000000000000003', value: 1 },
+      { voter_id: '000000000000000000000000', value: 3 }
+    ]
+  },
+  {
+    _id: '675200000000000000000010',
+    question_id: '675100000000000000000009',
+    body: 'Bạn nên tạo collection reports riêng...',
+    created_at: '2024-09-05T15:00:00Z',
+    author_info: { author_id: '675000000000000000000004', username: 'Lê Quang Cường' },
+    vote_score: 4, 
+    is_accepted: true,
+    voters: [
+      { voter_id: '000000000000000000000000', value: 3 },
+      { voter_id: '675000000000000000000005', value: 1 }
+    ]
+  },
+  {
+    _id: '675200000000000000000011',
+    question_id: '67510000000000000000000a',
+    body: 'Để hệ thống chuyên nghiệp...',
+    created_at: '2024-09-10T09:00:00Z',
+    author_info: { author_id: '675000000000000000000005', username: 'Phạm Minh Đức' },
+    vote_score: 4, 
+    is_accepted: true,
+    voters: [
+      { voter_id: '000000000000000000000000', value: 3 },
+      { voter_id: '675000000000000000000003', value: 1 },
+    ]
+  },
+  {
+    _id: '675200000000000000000012',
+    question_id: '67510000000000000000000a',
+    body: 'Bạn có thể thêm một bước hướng dẫn...',
+    created_at: '2024-09-10T09:20:00Z',
+    author_info: { author_id: '675000000000000000000002', username: 'Nguyễn Văn An' },
+    vote_score: 5, 
+    is_accepted: false,
+    voters: [
+      { voter_id: '000000000000000000000000', value: 3 },
+      { voter_id: '675000000000000000000003', value: 1 },
+      { voter_id: '675000000000000000000006', value: 1 },
+    ]
+  },
+  {
+    _id: '675200000000000000000013',
+    question_id: '67510000000000000000000a',
+    body: 'Trong đồ án, bạn có thể minh họa...',
+    created_at: '2024-09-10T09:40:00Z',
+    author_info: { author_id: '675000000000000000000007', username: 'Vũ Hoài Phúc' },
+    vote_score: 3, 
+    is_accepted: false,
+    voters: [
+      { voter_id: '000000000000000000000000', value: 3 },
+      { voter_id: '675000000000000000000005', value: 1 },
+      { voter_id: '675000000000000000000009', value: -1 }
+    ]
+  },
+  {
+    _id: '675200000000000000000014',
+    question_id: '67510000000000000000000a',
+    body: 'Tag có thể lưu dạng slug không dấu...',
+    created_at: '2024-09-10T10:00:00Z',
+    author_info: { author_id: '675000000000000000000008', username: 'Linh Chi' },
+    vote_score: 3, 
+    is_accepted: false,
+    voters: [
+      { voter_id: '000000000000000000000000', value: 3 }
+    ]
+  },
+  {
+    _id: '675200000000000000000015',
+    question_id: '67510000000000000000000b',
+    body: 'Bạn có thể bật text index...',
+    created_at: '2024-09-15T10:00:00Z',
+    author_info: { author_id: '675000000000000000000006', username: 'Hoàng Nam Anh' },
+    vote_score: 4, 
+    is_accepted: true,
+    voters: [
+      { voter_id: '000000000000000000000000', value: 3 },
+      { voter_id: '675000000000000000000003', value: 1 },
+    ]
+  },
+  {
+    _id: '675200000000000000000016',
+    question_id: '67510000000000000000000b',
+    body: 'Để highlight từ khóa trên giao diện...',
+    created_at: '2024-09-15T10:30:00Z',
+    author_info: { author_id: '675000000000000000000002', username: 'Nguyễn Văn An' },
+    vote_score: 4, 
+    is_accepted: false,
+    voters: [
+      { voter_id: '000000000000000000000000', value: 3 },
+      { voter_id: '675000000000000000000003', value: 1 },
+      { voter_id: '675000000000000000000005', value: 1 },
+      { voter_id: '675000000000000000000008', value: -1 }
+    ]
+  },
+  {
+    _id: '675200000000000000000017',
+    question_id: '67510000000000000000000c',
+    body: 'Với quy mô đồ án, lưu voters dưới dạng mảng...',
+    created_at: '2024-09-20T11:00:00Z',
+    author_info: { author_id: '675000000000000000000003', username: 'Trần Thị Bình' },
+    vote_score: 3, 
+    is_accepted: false,
+    voters: [
+      { voter_id: '000000000000000000000000', value: 3 },
+    ]
+  },
+  {
+    _id: '675200000000000000000018',
+    question_id: '67510000000000000000000c',
+    body: 'Quan trọng là bạn mô tả rõ ưu nhược điểm...',
+    created_at: '2024-09-20T11:20:00Z',
+    author_info: { author_id: '675000000000000000000005', username: 'Phạm Minh Đức' },
+    vote_score: 3, 
+    is_accepted: false,
+    voters: [
+      { voter_id: '000000000000000000000000', value: 3 }
+    ]
+  },
+  {
+    _id: '675200000000000000000019',
+    question_id: '67510000000000000000000d',
+    body: 'Giải pháp đơn giản là lưu answer_count...',
+    created_at: '2024-09-25T17:00:00Z',
+    author_info: { author_id: '675000000000000000000007', username: 'Vũ Hoài Phúc' },
+    vote_score: 3, 
+    is_accepted: false,
+    voters: [
+      { voter_id: '000000000000000000000000', value: 3 },
+      { voter_id: '675000000000000000000003', value: 1 },
+      { voter_id: '675000000000000000000006', value: -1 }
+    ]
+  },
+  {
+    _id: '67520000000000000000001a',
+    question_id: '67510000000000000000000e',
+    body: 'Khi user bị banned, nên giữ lại nội dung cũ...',
+    created_at: '2024-10-01T09:00:00Z',
+    author_info: { author_id: '675000000000000000000002', username: 'Nguyễn Văn An' },
+    vote_score: 5, 
+    is_accepted: true,
+    voters: [
+      { voter_id: '000000000000000000000000', value: 3 },
+      { voter_id: '675000000000000000000003', value: 1 },
+      { voter_id: '675000000000000000000005', value: 1 }
+    ]
+  },
+  {
+    _id: '67520000000000000000001b',
+    question_id: '67510000000000000000000e',
+    body: 'Trên giao diện, bạn có thể hiển thị nhãn...',
+    created_at: '2024-10-01T09:30:00Z',
+    author_info: { author_id: '675000000000000000000009', username: 'Tuấn Anh' },
+    vote_score: 3, 
+    is_accepted: false,
+    voters: [
+      { voter_id: '000000000000000000000000', value: 3 },
+      { voter_id: '675000000000000000000003', value: -1 },
+      { voter_id: '67500000000000000000000a', value: 1 }
+    ]
+  },
+  {
+    _id: '67520000000000000000001c',
+    question_id: '67510000000000000000000f',
+    body: 'Một bộ demo hợp lý là khoảng 10 users...',
+    created_at: '2024-10-05T11:00:00Z',
+    author_info: { author_id: '67500000000000000000000a', username: 'Khoái' },
+    vote_score: 4, 
+    is_accepted: false,
+    voters: [
+      { voter_id: '000000000000000000000000', value: 3 },
+      { voter_id: '675000000000000000000003', value: 1 },
+    ]
+  }
+])
+
+
+
+

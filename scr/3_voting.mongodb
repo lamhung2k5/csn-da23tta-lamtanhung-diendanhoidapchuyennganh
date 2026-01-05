@@ -1,0 +1,65 @@
+/*
+ * FILE 3: NGHIỆP VỤ ĐÁNH GIÁ
+ */
+
+// 1. Chọn Database để làm việc
+use('QnA_System_DB');
+
+// =========================================================
+// UC05: Đánh giá câu hỏi 
+// =========================================================
+
+//Bước 1: Tại collection questions, hệ thống sử dụng toán tử $inc để tăng điểm 
+vote_score và $push để thêm ID người vote vào mảng voters. Việc này giúp ngăn chặn 
+hành vi spam vote (một người vote nhiều lần). 
+db.questions.updateOne( 
+  { _id: "675100000000000000000002" }, 
+  { 
+    $inc: { vote_score: 1 }, 
+    $push: { voters: { voter_id: "675000000000000000000002", value: 1 } } 
+  } 
+)  
+//Bước 2: Tại collection users, tiến hành cộng điểm thưởng vào trường reputation 
+của tác giả câu hỏi nhằm khích lệ đóng góp chất lượng. 
+db.users.updateOne( 
+  { _id: "675000000000000000000003" }, 
+  { $inc: { reputation: 10 } } 
+)
+
+// =========================================================
+// UC06: Đánh giá câu trả lời 
+// =========================================================
+//Bước 1: Cập nhật tăng điểm vote_score và lưu vết người đánh giá vào document 
+câu trả lời tương ứng trong collection answers. 
+db.answers.updateOne( 
+  { _id: "675200000000000000000001" }, 
+  { 
+    $inc: { vote_score: 1 }, 
+    $push: { voters: { voter_id: "675000000000000000000002", value: 1 } } 
+  } 
+)
+//Bước 2: Cộng điểm uy tín (reputation) cho thành viên đã đưa ra câu trả lời đó. 
+Mức điểm thưởng ở đây (10 điểm) được thiết lập cao hơn so với câu hỏi để khuyến 
+khích việc giải quyết vấn đề. 
+db.users.updateOne( 
+  { _id: "675000000000000000000003" }, 
+  { $inc: { reputation: 10 } } 
+) 
+
+// =========================================================
+// UC07: Chấp nhận câu trả lời 
+// =========================================================
+//Bước 1: Cập nhật trạng thái câu trả lời được chấp nhận chưa: 
+db.answers.updateOne( 
+    { _id: "675200000000000000000001" }, 
+    { $set: { is_accepted: true } } 
+) - Bước 2: Cập nhật điểm cho user: 
+db.users.updateOne( 
+    { _id: "675000000000000000000003" }, 
+    { 
+        $inc: {   
+          reputation: 15, 
+          "stats.accepted_answer_count": 1 
+        } 
+    } 
+) 

@@ -1,0 +1,20 @@
+THÔNG TIN PHẦN MỀM VÀ HƯỚNG DẪN CÀI ĐẶT
+(Đồ án: Thiết kế và Cài đặt CSDL NoSQL cho Hệ thống Diễn đàn Hỏi-Đáp chuyên ngành)
+
+1. MÔI TRƯỜNG CƠ SỞ DỮ LIỆU (Database Server)
+- Tên phần mềm: MongoDB Community Server
+- Phiên bản sử dụng trong đồ án: 8.2.1
+- Link tải chính thức: https://www.mongodb.com/try/download/community
+- Lưu ý khi cài đặt: 
+  + Chọn "Complete" setup.
+  + Giữ nguyên cấu hình "Run service as Network Service user".
+
+2. CÔNG CỤ QUẢN LÝ (GUI)
+- Tên phần mềm: MongoDB Compass
+- Phiên bản sử dụng trong đồ án: 1.48.2
+- Link tải chính thức: https://www.mongodb.com/try/download/compass
+- Hướng dẫn: Đây là công cụ giao diện để import dữ liệu và chạy các file truy vấn (.mongodb).
+
+3. EDITOR (Tùy chọn)
+- Visual Studio Code (để xem code rõ ràng hơn).
+- Extension: MongoDB for VS Code.

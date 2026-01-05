@@ -1,0 +1,111 @@
+/*
+ * FILE 2: CÁC CHỨC NĂNG CƠ BẢN (CRUD)
+ * Mục tiêu: Demo đăng bài, sửa bài, tìm kiếm và xóa mềm (ẩn bài).
+ */
+
+// 1. Chọn Database để làm việc
+use('QnA_System_DB');
+
+// =========================================================
+// UC03: ĐĂNG CÂU HỎI MỚI
+// =========================================================
+
+//Bước 1: Thực hiện lệnh insertOne để khởi tạo Document câu hỏi mới vào collection questions với trạng thái mặc định là "open":
+db.questions.insertOne({
+    _id: "675100000000000000000099",
+    title: "Demo MongoDB Indexing",
+    body: "Làm sao tối ưu truy vấn?",
+    tags: ["mongodb", "performance"],
+    created_at: new Date(),
+    status: "open",
+    author_info: {
+        author_id: "675000000000000000000002",
+        username: "Nguyễn Văn An"
+    },
+    vote_score: 0,
+    answer_count: 0,
+    voters: []
+})
+
+
+//Bước 2: Thực thi lệnh updateOne với toán tử $inc vào collection users để tăng số lượng câu hỏi (question_count) của tác giả lên 1 đơn vị.
+db.users.updateOne(
+    { _id: "675000000000000000000002"},
+    { $inc: { "stats.question_count": 1 } }
+)
+
+// =========================================================
+// UC04: ĐĂNG CÂU TRẢ LỜI
+// =========================================================
+
+//Bước 1: Thêm nội dung câu trả lời vào collection answers, liên kết với câu hỏi gốc thông qua khóa ngoại question_id:
+
+db.answers.insertOne({
+    _id: "675200000000000000000099",
+    question_id: "675100000000000000000099",
+    body: "Bạn nên dùng Compound Index...",
+    created_at: new Date(),
+    is_accepted: false,
+    author_info: {
+        author_id: "675000000000000000000003",
+        username: "Trần Thị Bình"
+    },
+    vote_score: 0,
+    voters: []
+})
+//Bước 2: Cập nhật hồ sơ người dùng trong collection users (tăng answer_count) để ghi nhận mức độ đóng góp:
+db.users.updateOne(
+    { _id: "675000000000000000000003" },
+    { $inc: { "stats.answer_count": 1 } }
+)
+//Bước 3: Cập nhật ngữ cảnh cho câu hỏi gốc trong collection questions (tăng answer_count) để phản ánh số lượng phản hồi theo thời gian thực:
+db.questions.updateOne(
+    { _id: "675100000000000000000099" },
+    { $inc: { answer_count: 1 } }
+)
+
+
+// =========================================================
+// UC_01: XEM CHI TIẾT BÀI ĐĂNG
+// =========================================================
+
+//Bước 1: Truy vấn collection questions theo _id để lấy nội dung câu hỏi chính.
+db.questions.findOne({ _id: "675100000000000000000001" })
+
+//Bước 2: Truy vấn collection answers dựa trên khóa ngoại question_id để lấy toàn bộ danh sách các câu trả lời liên quan.
+db.answers.find({ question_id: "675100000000000000000001" })
+
+
+
+// =========================================================
+// UC08: SỬA BÀI ĐĂNG
+// =========================================================
+//Bước 1: Thực hiện lệnh updateOne để tìm kiếm bài viết theo _id, kết hợp điều kiện kiểm tra author_info.author_id để cho chỉ chính tác giả mới có quyền chỉnh sửa. 
+//Bước 2: Sử dụng toán tử $set để cập nhật các trường nội dung thay đổi và ghi nhận thời gian chỉnh sửa (updated_at).
+db.questions.updateOne(
+    {
+        _id: "675100000000000000000001",
+        "author_info.author_id": "675000000000000000000002"
+    },
+    {
+        $set: {
+            title: "[Đã giải quyết] Thiết kế schema MongoDB?",
+            updated_at: new Date()
+        }
+    }
+)
+
+// =========================================================
+// UC9: QUẢN LÝ BÀI ĐĂNG - ẨN BÀI VI PHẠM
+// =========================================================
+//Bước 1: Xác định bài viết cần xử lý dựa trên _id.
+//Bước 2: Sử dụng toán tử $set để chuyển trạng thái status sang "hidden" và ghi đè nội dung cảnh báo vào trường body, giúp giữ lại lịch sử vi phạm để tra cứu khi cần thiết.
+db.questions.updateOne(
+    { _id: "675100000000000000000003" },
+    {
+        $set: {
+            status: "hidden",
+            body: "[Nội dung đã bị ẩn bởi Quản trị viên]"
+        }
+    }
+)
