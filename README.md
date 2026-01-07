@@ -1,10 +1,4 @@
-
-# Project Title
-
-A brief description of what this project does and who it's for
-
-
-# ĐỒ ÁN CƠ SỞ NGÀNH - HỆ THỐNG DIỄN ĐÀN HỎI ĐÁP NO-SQL (MONGODB)
+# ĐỒ ÁN CƠ SỞ NGÀNH
 
 [![MongoDB](https://img.shields.io/badge/Database-MongoDB_8.2.1-green?style=for-the-badge&logo=mongodb)](https://www.mongodb.com/)
 [![Status](https://img.shields.io/badge/Status-Completed-blue?style=for-the-badge)](https://github.com/lamhung2k5)
