@@ -37,7 +37,7 @@ Cấu trúc thư mục tuân thủ quy định nộp bài của Bộ môn:
 
 ```text
 110123015_LamTanHung_DoAnNoSQL/
-├── src/                  # [QUAN TRỌNG] Mã nguồn & Dữ liệu mẫu
+├── src/                      # Mã nguồn & Dữ liệu mẫu
 │   ├── 1_init_data.mongodb   # Script tạo CSDL và nạp dữ liệu (Users, Questions, Answers)
 │   ├── 2_crud_basic.mongodb  # Script demo chức năng cơ bản (Đăng, Sửa, Ẩn bài)
 │   ├── 3_voting.mongodb      # Script demo chức năng Đánh giá (Vote Up/Down)
@@ -47,11 +47,10 @@ Cấu trúc thư mục tuân thủ quy định nộp bài của Bộ môn:
 │   ├── doc/              # Báo cáo bản Word
 │   ├── pdf/              # Báo cáo bản PDF
 │   ├── abs/              # Slide thuyết trình (.pptx)
+|   ├── poster/           # Poster giới thiệu đồ án
 │   └── refs/             # Tài liệu tham khảo
 │
-├── poster/               # Poster giới thiệu đồ án
 ├── soft/                 # Link tải phần mềm MongoDB & Compass
-├── progress-report/      # Báo cáo tiến độ định kỳ
 └── README.md             # File hướng dẫn này
 ```
 ---
