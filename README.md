@@ -12,9 +12,9 @@
 | :--- | :--- |
 | **Họ và tên** | **Lâm Tấn Hưng** |
 | **MSSV** | **110123015** |
-| **Lớp** | ĐH. Tin học Ứng dụng 2023 (DA23TTA) |
+| **Lớp** | ĐH. CÔNG NGHỆ THÔNG TIN 2023 (DA23TTA) |
 | **Giảng viên hướng dẫn** | ThS. Phan Thị Phương Nam |
-| **Email** | lamhung2k5@gmail.com |
+| **Email** | lamh31387@gmail.com |
 
 ---
 
