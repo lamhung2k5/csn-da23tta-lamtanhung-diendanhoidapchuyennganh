@@ -93,7 +93,7 @@ Thực hiện tương tự **Bước 2** với các file còn lại:
 ## 6. POSTER ĐỒ ÁN
 Dưới đây là Poster tóm tắt kết quả nghiên cứu:
 
-![Poster Đồ án](thesis/poster/posterCSN.jpg)
+![Poster Đồ án](csn-da23tta-lamtanhung-diendanhoidapchuyennganh/thesis/poster/posterCSN.png)
 
 ---
 
