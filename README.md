@@ -94,7 +94,7 @@ Dưới đây là Poster tóm tắt kết quả nghiên cứu:
 ## 7. LIÊN HỆ
 Mọi thắc mắc về mã nguồn xin vui lòng liên hệ:
 
-* **Email:** [lamhung2k5@gmail.com](mailto:lamhung2k5@gmail.com)
+* **Email:** [lamhung2k5@gmail.com](mailto:lamh31387@gmail.com)
 * **GitHub:** [lamhung2k5](https://github.com/lamhung2k5)
 
 *Cảm ơn Quý Thầy/Cô và các bạn đã quan tâm!*
